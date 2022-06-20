@@ -1,8 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<api context="/flight/manager" name="FlightManager" xmlns="http://ws.apache.org/ns/synapse">
+<api context="/context" name="FlightManager.xml" xmlns="http://ws.apache.org/ns/synapse">
     <resource methods="GET">
-        <inSequence/>
-        <outSequence/>
+        <inSequence>
+            <sequence key="StoreContextProperties"/>
+            <clone>
+                <target>
+                    <sequence>
+                        <sequence key="GetAircraftData"/>
+                    </sequence>
+                </target>
+                <target>
+                    <sequence>
+                        <sequence key="GetPilotData"/>
+                    </sequence>
+                </target>
+                <target>
+                    <sequence>
+                        <sequence key="GetOperationalData"/>
+                    </sequence>
+                </target>
+            </clone>
+        </inSequence>
+        <outSequence>
+            <aggregate>
+                <completeCondition>
+                    <messageCount max="-1" min="-1"/>
+                </completeCondition>
+                <onComplete aggregateElementType="root" expression="/">
+                    <sequence key="EvaluateData"/>
+                    <class description="EvaluateData" name="EvaluateData"/>
+                    <filter regex="true" source="//status/HasError">
+                        <then/>
+                        <else/>
+                    </filter>
+                    <respond description="Respond"/>
+                </onComplete>
+            </aggregate>
+        </outSequence>
         <faultSequence/>
     </resource>
 </api>
