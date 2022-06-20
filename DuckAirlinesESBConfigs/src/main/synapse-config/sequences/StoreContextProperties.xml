@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="StoreContextProperties" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <property description="Property" expression="//mediate/FlightTime" name="FlightTime" scope="default" type="STRING"/>
+    <property description="Property" expression="//mediate/OriginAirport" name="OriginAirport" scope="default" type="STRING"/>
+    <property description="Property" expression="//mediate/DestinationAirport" name="DestinationAirport" scope="default" type="STRING"/>
+    <property description="Property" expression="//mediate/FlightNumber" name="FlightNumber" scope="default" type="STRING"/>
+    <property description="Property" expression="//mediate/PilotFirstName" name="PilotFirstName" scope="default" type="STRING"/>
+    <property description="Property" expression="//mediate/PilotLastName" name="PilotLastName" scope="default" type="STRING"/>
+    <property description="Property" expression="//mediate/TailNumber" name="TailNumber" scope="default" type="STRING"/>
+</sequence>
