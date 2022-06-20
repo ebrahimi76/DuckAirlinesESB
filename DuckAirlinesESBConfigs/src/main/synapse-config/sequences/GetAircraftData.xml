@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="GetAircraftData" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <enrich description="AddAircraftData">
+        <source clone="true" type="inline">
+            <Aircraft xmlns="">
+                <FleetId/>
+                <LandingDistance/>
+                <TakeoffDistance/>
+                <Manufacturer/>
+                <AircraftRange/>
+                <AirframeHours/>
+                <Speed/>
+            </Aircraft>
+        </source>
+        <target action="child" type="body"/>
+    </enrich>
+    <dblookup description="GetAircraftInfo">
+        <connection>
+            <pool>
+                <driver>com.mysql.jdbc.Driver</driver>
+                <url>jdbc:mysql://localhost:3306/duckairlines</url>
+                <user>root</user>
+                <password>123456</password>
+            </pool>
+        </connection>
+        <statement>
+            <sql><![CDATA[SELECT f.fleet_id, f.tail_number, f.airframe_hours, a.aircraft_abbr, a.aircraft_name, a.landing_roll_out, a.manufacurer, a.`range`, a.takeoff_roll, a.norm_cruise_speed FROM fleet f JOIN aircraft a on f.aircraft_id = a.aircraft_id WHERE f.tail_number = ? ;]]></sql>
+            <parameter expression="get-property('TailNumber')" type="VARCHAR"/>
+            <result column="takeoff_roll" name="TakeoffRoll"/>
+            <result column="aircraft_abbr" name="AircraftAbbr"/>
+            <result column="norm_cruise_speed" name="Speed"/>
+            <result column="fleet_id" name="FleetId"/>
+            <result column="manufacturer" name="Manufacturer"/>
+            <result column="range" name="Range"/>
+            <result column="airframe_jours" name="AirframeHours"/>
+            <result column="landing_roll_out" name="LandingRollOut"/>
+        </statement>
+    </dblookup>
+    <enrich description="FleetId">
+        <source clone="true" property="FleetId" type="property"/>
+        <target xpath="//mediate/AircraftData/FleetId"/>
+    </enrich>
+    <enrich description="AircraftAbbr">
+        <source clone="true" property="AircraftAbbr" type="property"/>
+        <target xpath="//mediate/AircraftData/AircraftAbbr"/>
+    </enrich>
+    <enrich description="LandingDistance">
+        <source clone="true" property="LandingDistance" type="property"/>
+        <target xpath="//mediate/AircraftData/LandingDistance"/>
+    </enrich>
+    <enrich description="TakeoffDistance">
+        <source clone="true" property="TakeoffDistance" type="property"/>
+        <target xpath="//mediate/AircraftData/TakeoffDistance"/>
+    </enrich>
+    <enrich description="Manufacturer">
+        <source clone="true" property="Manufacturer" type="property"/>
+        <target xpath="//mediate/AircraftData/Manufacturer"/>
+    </enrich>
+    <enrich description="AircraftRange">
+        <source clone="true" property="AircraftRange" type="property"/>
+        <target xpath="//mediate/AircraftData/AircraftRange"/>
+    </enrich>
+    <enrich description="AirframeHours">
+        <source clone="true" property="AirframeHour" type="property"/>
+        <target xpath="//mediate/AircraftData/AirframeHour"/>
+    </enrich>
+    <enrich description="Speed">
+        <source clone="true" property="Speed" type="property"/>
+        <target xpath="//mediate/AircraftData/Speed"/>
+    </enrich>
+    <loopback description="LoopBack"/>
+</sequence>
