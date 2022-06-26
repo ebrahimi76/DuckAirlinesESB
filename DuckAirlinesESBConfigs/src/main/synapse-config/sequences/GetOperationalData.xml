@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="GetOperationalData" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <enrich description="AddOperationalData">
+        <source clone="true" type="inline">
+            <OperationalData xmlns="">
+                <RunwayLenghths>
+                    <OriginAirport/>
+                    <DestinationAirport/>
+                </RunwayLenghths>
+            </OperationalData>
+        </source>
+        <target action="child" type="body"/>
+    </enrich>
+    <dblookup description="GetRunway">
+        <connection>
+            <pool>
+                <driver>com.mysql.jdbc.Driver</driver>
+                <url>jdbc:mysql://localhost:3306/duckairlines</url>
+                <user>root</user>
+                <password>123456</password>
+            </pool>
+        </connection>
+        <statement>
+            <sql><![CDATA[
+        		SELECT max(runway_length) as runway_distance from runways r join airports a on r.site_number = a.site_number where  a.location_id = ? ;
+        	]]></sql>
+            <parameter expression="get-property('OriginAirport')" type="VARCHAR"/>
+            <result column="runway_distance" name="RunwayLength"/>
+        </statement>
+    </dblookup>
+    <enrich>
+        <source clone="true" property="RunwayLength" type="property"/>
+        <target xpath="//mediate/OperationalData/RunwayLengths/OriginAirport"/>
+    </enrich>
+    <dblookup>
+        <connection>
+            <pool>
+                <driver>com.mysql.jdbc.Driver</driver>
+                <url>jdbc:mysql://localhost:3306/duckairlines</url>
+                <user>root</user>
+                <password>123456</password>
+            </pool>
+        </connection>
+        <statement>
+            <sql><![CDATA[
+        		SELECT max(runway_length) as runway_distance from runways r join airports a on r.site_number = a.site_number where  a.location_id = ? ;
+        	]]></sql>
+            <parameter expression="get-property('DestinationAirport')" type="VARCHAR"/>
+            <result column="runway_distance" name="RunwayLength"/>
+        </statement>
+    </dblookup>
+    <enrich>
+        <source clone="true" property="RunwayLength" type="property"/>
+        <target xpath="//mediate/OperationalData/RunwayLengths/DestinationAirport"/>
+    </enrich>
+    <dblookup>
+        <connection>
+            <pool>
+                <driver>com.mysql.jdbc.Driver</driver>
+                <url>jdbc:mysql://localhost:3306/duckairlines</url>
+                <user>root</user>
+                <password>123456</password>
+            </pool>
+        </connection>
+        <statement>
+            <sql><![CDATA[CALL get_distance_between_airports(?,?);]]></sql>
+            <parameter expression="get-property('OriginAirport')" type="VARCHAR"/>
+            <parameter expression="get-property('DestinationAirport')" type="VARCHAR"/>
+            <result column="distance" name="FlightDistance"/>
+        </statement>
+    </dblookup>
+    <enrich>
+        <source clone="true" property="FlightDistance" type="property"/>
+        <target xpath="//mediate/OperationalData/RouteDistance"/>
+    </enrich>
+    <loopback/>
+</sequence>

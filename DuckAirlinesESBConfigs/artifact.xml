@@ -11,4 +11,7 @@
     <artifact name="GetPilotData" groupId="com.example.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
         <file>src/main/synapse-config/sequences/GetPilotData.xml</file>
     </artifact>
+    <artifact name="GetOperationalData" groupId="com.example.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/GetOperationalData.xml</file>
+    </artifact>
 </artifacts>
