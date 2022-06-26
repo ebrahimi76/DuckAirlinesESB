@@ -8,4 +8,7 @@
     <artifact name="GetAircraftData" groupId="com.example.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
         <file>src/main/synapse-config/sequences/GetAircraftData.xml</file>
     </artifact>
+    <artifact name="GetPilotData" groupId="com.example.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/GetPilotData.xml</file>
+    </artifact>
 </artifacts>

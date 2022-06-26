@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="GetPilotData" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <enrich description="AddPilotData">
+        <source clone="true" type="inline">
+            <pilotData xmlns="">
+                <CrewId/>
+                <PilotRating/>
+            </pilotData>
+        </source>
+        <target action="child" type="body"/>
+    </enrich>
+    <dblookup description="GetPilotData">
+        <connection>
+            <pool>
+                <driver>com.mysql.jdbc.Driver</driver>
+                <url>jdbc:mysql://localhost:3306/duckairlines</url>
+                <user>root</user>
+                <password>123456</password>
+            </pool>
+        </connection>
+        <statement>
+            <sql><![CDATA[SELECT c,crew_id, a.aircraft_abbr FROM ratings r JOIN aircraft a ON a.aircraft_id = r.aircraft_id  JOIN crew c ON c.crew_id = r.crew_id WHERE c.first_name = ? AND c.last_name = ?]]></sql>
+            <parameter expression="get-property('PilotFirstName')" type="CHAR"/>
+            <parameter expression="get-property('LastName')" type="CHAR"/>
+            <result column="aircraft_abbr" name="AircraftAbbr"/>
+            <result column="crew_id" name="CrewId"/>
+        </statement>
+    </dblookup>
+    <enrich description="CrewId">
+        <source clone="true" property="CrewId" type="property"/>
+        <target xpath="//PilotData/CrewId"/>
+    </enrich>
+    <enrich description="AircraftAbbr">
+        <source clone="true" property="AircraftAbbr" type="property"/>
+        <target xpath="//PilotData/AircraftAbbr"/>
+    </enrich>
+    <loopback/>
+</sequence>
